@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer dimension enriched with customer group attributes for segmentation and self-service analysis."
+    columns:
+      - name: customer_id
+        description: "Primary key for customer."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        description: "Full name of the customer."
+
+      - name: customer_group_id
+        description: "Foreign key linking customer to customer group."
+
+      - name: customer_group_type
+        description: "Type of customer group (Company, Private Group, Organisation)."
+
+  - name: dim_aeroplane
+    description: "Aeroplane dimension enriched with aircraft model specifications."
+    columns:
+      - name: aeroplane_id
+        description: "Primary key for a physical aeroplane."
+        tests:
+          - not_null
+          - unique
+
+      - name: manufacturer
+        description: "Manufacturer of the aeroplane."
+        tests:
+          - not_null
+
+      - name: aeroplane_model
+        description: "Aeroplane model name."
+        tests:
+          - not_null
+
+      - name: max_seats
+        description: "Maximum number of seats supported by the aeroplane model."
+
+      - name: max_distance
+        description: "Maximum flight distance supported by the aeroplane model."
+
+      - name: engine_type
+        description: "Engine type used by the aeroplane model."
+
+  - name: fct_orders
+    description: "Fact table at order grain capturing seat purchases, revenue, and trip context."
+    columns:
+      - name: order_id
+        description: "Primary key for each order."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Customer who placed the order."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+
+      - name: trip_id
+        description: "Trip associated with the order."
+        tests:
+          - not_null
+
+      - name: price_eur
+        description: "Seat price paid in EUR."
+        tests:
+          - not_null
+
+      - name: status
+        description: "Order status in lifecycle."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["finished", "booked", "cancelled"]
+
+      - name: origin_city
+        description: "Origin city of the trip."
+
+      - name: destination_city
+        description: "Destination city of the trip."
+
+      - name: start_ts
+        description: "Trip start timestamp."
+
+      - name: end_ts
+        description: "Trip end timestamp."
+
+      - name: trip_day
+        description: "Trip date derived from start timestamp."
+
+      - name: aeroplane_id
+        description: "Aeroplane used for the trip."
