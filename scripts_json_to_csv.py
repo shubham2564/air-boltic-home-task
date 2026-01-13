@@ -27,4 +27,4 @@ with open(output_path, "w", newline="") as f:
     writer.writeheader()
     writer.writerows(rows)
 
-print(f"✅ Wrote {len(rows)} rows to {output_path}")
+print(f"Wrote {len(rows)} rows to {output_path}")
